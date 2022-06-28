@@ -1,4 +1,4 @@
-package AuthorBooksHTTP
+package Code
 
 import (
 	"bytes"
@@ -17,8 +17,8 @@ func TestGetAll(t *testing.T) {
 		output []Book
 	}{
 		{"List of books with their details.", "/books", []Book{
-			{1, "XYZ", &Author{"Palak", "Kejriwal", "07-10-1998", "cilios"}, "Pqrs", "06-11-1940"},
-			{2, "XYZ1", &Author{"Alice", "Thomas", "12-11-1997", "ninja"}, "Pqrs1", "08-01-1950"}}},
+			{"1", 1, "XYZ", &Author{1, "Palak", "Kejriwal", "07-10-1998", "cilios"}, "Arihanth", "21-04-2001"},
+			{"2", 3, "Dusk", &Author{3, "John", "Crook", "12-03-1978", "ninja"}, "Penguin", "31-05-1997"}}},
 	}
 
 	for _, test := range testcases {
@@ -53,7 +53,7 @@ func TestGetByID(t *testing.T) {
 		output Book
 	}{
 		{"The details for book XYZ: ", "/books/xyz",
-			Book{1, "XYZ", &Author{"Alice", "Thomas", "12-11-1997", "ninja"}, "Pqrs", "06-11-1940"}},
+			Book{"1", 1, "XYZ", &Author{1, "Alice", "Thomas", "12-11-1997", "ninja"}, "Pqrs", "06-11-1940"}},
 	}
 
 	for _, test := range testcases {
@@ -87,17 +87,17 @@ func TestPostBook(t *testing.T) {
 		book       Book
 		statusCode int
 	}{
-		{"Success Case.", Book{1, "ABC", Author{"Palak", "Kejriwal", "07-10-1998", "cilios"}, "Arihanth", "18-08-2018"},
+		{"Success Case.", Book{"1", 1, "ABC", &Author{1, "Palak", "Kejriwal", "07-10-1998", "cilios"}, "Arihanth", "18-08-2018"},
 			http.StatusCreated},
-		{"Blank book name.", Book{2, "", Author{"Palak", "Kejriwal", "07-10-1998", "cilios"}, "Oxford", "21-04-1985"},
+		{"Blank book name.", Book{"2", 2, "", &Author{2, "Palak", "Kejriwal", "07-10-1998", "cilios"}, "Oxford", "21-04-1985"},
 			http.StatusBadRequest},
-		{"Invalid author.", Book{3, "ABC", Author{"John", "Fernandes", "19-12-1972", "cilios"}, "Oxford", "21-04-1985"},
+		{"Invalid Author.", Book{"3", 3, "ABC", &Author{3, "John", "Fernandes", "19-12-1972", "cilios"}, "Oxford", "21-04-1985"},
 			http.StatusBadRequest,
 		},
-		{"Invalid publication date.", Book{4, "ABC", Author{"John", "Fernandes", "19-12-1972", "cilios"}, "Oxford", "21-04-1879"},
+		{"Invalid Publication date.", Book{"4", 4, "ABC", &Author{4, "John", "Fernandes", "19-12-1972", "cilios"}, "Oxford", "21-04-1879"},
 			http.StatusBadRequest,
 		},
-		{"Invalid publication date.", Book{5, "ABC", Author{"John", "Fernandes", "19-12-1972", "cilios"}, "Oxford", "21-04-2031"},
+		{"Invalid Publication date.", Book{"5", 5, "ABC", &Author{5, "John", "Fernandes", "19-12-1972", "cilios"}, "Oxford", "21-04-2031"},
 			http.StatusBadRequest,
 		},
 	}
@@ -121,15 +121,15 @@ func TestPostAuthor(t *testing.T) {
 		author     Author
 		statusCode int
 	}{
-		{"Valid case.", Author{"Palak", "Kejriwal", "07-10-1998", "cilios"},
+		{"Valid case.", Author{1, "Palak", "Kejriwal", "07-10-1998", "cilios"},
 			http.StatusCreated},
-		{"Blank first name.", Author{"", "Kejriwal", "07-10-1998", "cilios"},
+		{"Blank first name.", Author{2, "", "Kejriwal", "07-10-1998", "cilios"},
 			http.StatusBadRequest},
 		//{"Blank last name.", Author{"Palak", "", "07-10-1998", "cilios"},
 		//	http.StatusBadRequest},
-		{"Blank name.", Author{"", "", "07-10-1998", "cilios"},
+		{"Blank name.", Author{3, "", "", "07-10-1998", "cilios"},
 			http.StatusBadRequest},
-		{"Blank penname.", Author{"Palak", "Kejriwal", "07-10-1998", ""},
+		{"Blank penname.", Author{4, "Palak", "Kejriwal", "07-10-1998", ""},
 			http.StatusCreated},
 	}
 
@@ -137,7 +137,7 @@ func TestPostAuthor(t *testing.T) {
 		newData, _ := json.Marshal(test.author)
 
 		w := httptest.NewRecorder()
-		req := httptest.NewRequest("POST", "/author", bytes.NewBuffer(newData))
+		req := httptest.NewRequest("POST", "/Author", bytes.NewBuffer(newData))
 		PostBook(w, req)
 		resp := w.Result()
 
